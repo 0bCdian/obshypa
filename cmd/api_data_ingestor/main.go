@@ -24,7 +24,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	csvData, err := csvreader.CsvReader(fileLocation)
+	csvData, err := csvreader.CsvReader(fileLocation.manaboxCsv)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -34,7 +34,12 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	err = savetojson.SaveToJson(scryfallData)
+	cardMarketData, err := apiclient.GetCardmarketData(fileLocation.cardmarketCsv, &scryfallData)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = savetojson.SaveToJson(cardMarketData)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

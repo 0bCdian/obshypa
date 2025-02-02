@@ -22,15 +22,24 @@ func (err *EnoentEror) Error() string {
 	return fmt.Sprintf("file %s does not exist\n%s", err.Filepath, err.Context)
 }
 
-func ParseFileArg() (string, error) {
+type Args struct {
+	cardmarketCsv string
+	manaboxCsv    string
+}
+
+func ParseFileArg() (*Args, error) {
 	if len(os.Args) < 2 {
-		return "", &MissingArgError{Context: "ParseFileArg"}
+		return nil, &MissingArgError{Context: "ParseFileArg"}
 	}
-	fileLocation := os.Args[1]
-	if !fileExists(fileLocation) {
-		return "", &EnoentEror{Filepath: fileLocation, Context: "ParseFileArg"}
+	manaboxCsvFilePath := os.Args[1]
+	if !fileExists(manaboxCsvFilePath) {
+		return nil, &EnoentEror{Filepath: manaboxCsvFilePath, Context: "ParseFileArg"}
 	}
-	return fileLocation, nil
+	cardmarketCsvFilePath := os.Args[2]
+	if !fileExists(cardmarketCsvFilePath) {
+		return nil, &EnoentEror{Filepath: cardmarketCsvFilePath, Context: "ParseFileArg"}
+	}
+	return &Args{cardmarketCsv: cardmarketCsvFilePath, manaboxCsv: manaboxCsvFilePath}, nil
 }
 
 func fileExists(filename string) bool {

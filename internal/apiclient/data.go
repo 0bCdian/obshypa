@@ -111,7 +111,12 @@ type ScryfallApiData struct {
 		Cardhoarder string `json:"cardhoarder"`
 	} `json:"purchase_uris"`
 }
-type CardMkarketPriceGuide struct {
+type ScryfallData struct {
+	Quantity int8
+	ScryfallApiData
+}
+
+type CardMarketPriceGuide struct {
 	IDProduct  int     `json:"idProduct"`
 	IDCategory int     `json:"idCategory"`
 	Avg        float64 `json:"avg"`
@@ -129,13 +134,12 @@ type CardMkarketPriceGuide struct {
 }
 
 type CardmarketData struct {
-	Version     int                     `json:"version"`
-	CreatedAt   string                  `json:"createdAt"`
-	PriceGuides []CardMkarketPriceGuide `json:"priceGuides"`
+	Version     int                    `json:"version"`
+	CreatedAt   string                 `json:"createdAt"`
+	PriceGuides []CardMarketPriceGuide `json:"priceGuides"`
 }
 
 type Card struct {
-	Quantity int8
-	ScryfallApiData
-	Prices CardMkarketPriceGuide
+	ScryfallData
+	Prices CardMarketPriceGuide
 }

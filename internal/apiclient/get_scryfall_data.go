@@ -12,11 +12,11 @@ import (
 
 const scryfall_url = "https://api.scryfall.com/cards/%s"
 
-func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallApiData, error) {
+func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 	if len(csvData) < 1 {
 		return nil, fmt.Errorf("empty csvData")
 	}
-	var scryfallData []ScryfallApiData
+	var scryfallData []ScryfallData
 	for _, card := range csvData {
 		url := fmt.Sprintf(scryfall_url, card.ScryfallID)
 		data, err := callScryfallApi(url)
@@ -24,7 +24,8 @@ func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallApiData, error) {
 			fmt.Printf("error getting data for card:%v\nerror:%v", card.ScryfallID, err.Error())
 			continue
 		}
-		scryfallData = append(scryfallData, *data)
+		newCard := ScryfallData{Quantity: card.Quantity, ScryfallApiData: *data}
+		scryfallData = append(scryfallData, newCard)
 		time.Sleep(time.Millisecond * 150)
 	}
 	return scryfallData, nil
