@@ -23,8 +23,7 @@ func (err *EnoentEror) Error() string {
 }
 
 type Args struct {
-	cardmarketCsv string
-	manaboxCsv    string
+	manaboxCsv string
 }
 
 func ParseFileArg() (*Args, error) {
@@ -35,11 +34,7 @@ func ParseFileArg() (*Args, error) {
 	if !fileExists(manaboxCsvFilePath) {
 		return nil, &EnoentEror{Filepath: manaboxCsvFilePath, Context: "ParseFileArg"}
 	}
-	cardmarketCsvFilePath := os.Args[2]
-	if !fileExists(cardmarketCsvFilePath) {
-		return nil, &EnoentEror{Filepath: cardmarketCsvFilePath, Context: "ParseFileArg"}
-	}
-	return &Args{cardmarketCsv: cardmarketCsvFilePath, manaboxCsv: manaboxCsvFilePath}, nil
+	return &Args{manaboxCsv: manaboxCsvFilePath}, nil
 }
 
 func fileExists(filename string) bool {

@@ -34,7 +34,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	cardMarketData, err := apiclient.GetCardmarketData(fileLocation.cardmarketCsv, &scryfallData)
+	cardMarketData, err := apiclient.GetCardmarketData(&scryfallData)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
