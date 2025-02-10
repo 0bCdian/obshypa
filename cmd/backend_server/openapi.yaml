@@ -1,0 +1,318 @@
+openapi: "3.1.1"
+info:
+  title: "0bshypa API"
+  version: "1.0.0"
+paths:
+  /cards:
+    get:
+      summary: "Get all cards"
+      description: "Retrieve an array of Card objects."
+      responses:
+        "200":
+          description: "A list of Card objects."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Card"
+components:
+  schemas:
+    ScryfallApiData:
+      type: object
+      properties:
+        object:
+          type: string
+        id:
+          type: string
+        oracle_id:
+          type: string
+        multiverse_ids:
+          type: array
+          items:
+            type: integer
+        mtgo_id:
+          type: integer
+        mtgo_foil_id:
+          type: integer
+        tcgplayer_id:
+          type: integer
+        cardmarket_id:
+          type: integer
+        name:
+          type: string
+        lang:
+          type: string
+        released_at:
+          type: string
+          format: date
+        uri:
+          type: string
+          format: uri
+        scryfall_uri:
+          type: string
+          format: uri
+        layout:
+          type: string
+        highres_image:
+          type: boolean
+        image_status:
+          type: string
+        image_uris:
+          type: object
+          properties:
+            small:
+              type: string
+              format: uri
+            normal:
+              type: string
+              format: uri
+            large:
+              type: string
+              format: uri
+            png:
+              type: string
+              format: uri
+            art_crop:
+              type: string
+              format: uri
+            border_crop:
+              type: string
+              format: uri
+        mana_cost:
+          type: string
+        cmc:
+          type: number
+        type_line:
+          type: string
+        oracle_text:
+          type: string
+        power:
+          type: string
+        toughness:
+          type: string
+        colors:
+          type: array
+          items:
+            type: string
+        color_identity:
+          type: array
+          items:
+            type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        legalities:
+          type: object
+          properties:
+            standard:
+              type: string
+            future:
+              type: string
+            historic:
+              type: string
+            timeless:
+              type: string
+            gladiator:
+              type: string
+            pioneer:
+              type: string
+            explorer:
+              type: string
+            modern:
+              type: string
+            legacy:
+              type: string
+            pauper:
+              type: string
+            vintage:
+              type: string
+            penny:
+              type: string
+            commander:
+              type: string
+            oathbreaker:
+              type: string
+            standardbrawl:
+              type: string
+            brawl:
+              type: string
+            alchemy:
+              type: string
+            paupercommander:
+              type: string
+            duel:
+              type: string
+            oldschool:
+              type: string
+            premodern:
+              type: string
+            predh:
+              type: string
+        games:
+          type: array
+          items:
+            type: string
+        reserved:
+          type: boolean
+        foil:
+          type: boolean
+        nonfoil:
+          type: boolean
+        finishes:
+          type: array
+          items:
+            type: string
+        oversized:
+          type: boolean
+        promo:
+          type: boolean
+        reprint:
+          type: boolean
+        variation:
+          type: boolean
+        set_id:
+          type: string
+        set:
+          type: string
+        set_name:
+          type: string
+        set_type:
+          type: string
+        set_uri:
+          type: string
+          format: uri
+        set_search_uri:
+          type: string
+          format: uri
+        scryfall_set_uri:
+          type: string
+          format: uri
+        rulings_uri:
+          type: string
+          format: uri
+        prints_search_uri:
+          type: string
+          format: uri
+        collector_number:
+          type: string
+        digital:
+          type: boolean
+        rarity:
+          type: string
+        card_back_id:
+          type: string
+        artist:
+          type: string
+        artist_ids:
+          type: array
+          items:
+            type: string
+        illustration_id:
+          type: string
+        border_color:
+          type: string
+        frame:
+          type: string
+        full_art:
+          type: boolean
+        textless:
+          type: boolean
+        booster:
+          type: boolean
+        story_spotlight:
+          type: boolean
+        edhrec_rank:
+          type: number
+        penny_rank:
+          type: number
+        prices:
+          type: object
+          properties:
+            usd:
+              type: string
+            usd_foil:
+              type: string
+            usd_etched:
+              type: string
+            eur:
+              type: string
+            eur_foil:
+              type: string
+            tix:
+              type: string
+        related_uris:
+          type: object
+          properties:
+            gatherer:
+              type: string
+              format: uri
+            tcgplayer_infinite_articles:
+              type: string
+              format: uri
+            tcgplayer_infinite_decks:
+              type: string
+              format: uri
+            edhrec:
+              type: string
+              format: uri
+        purchase_uris:
+          type: object
+          properties:
+            tcgplayer:
+              type: string
+              format: uri
+            cardmarket:
+              type: string
+              format: uri
+            cardhoarder:
+              type: string
+              format: uri
+    ScryfallData:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            quantity:
+              type: integer
+        - $ref: "#/components/schemas/ScryfallApiData"
+    CardMarketPriceGuide:
+      type: object
+      properties:
+        idProduct:
+          type: integer
+        idCategory:
+          type: integer
+        avg:
+          type: number
+        low:
+          type: number
+        trend:
+          type: number
+        avg1:
+          type: number
+        avg7:
+          type: number
+        avg30:
+          type: number
+        avg-foil:
+          type: number
+        low-foil:
+          type: number
+        trend-foil:
+          type: number
+        avg1-foil:
+          type: number
+        avg7-foil:
+          type: number
+        avg30-foil:
+          type: number
+    Card:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ScryfallData"
+        - type: object
+          properties:
+            prices:
+              $ref: "#/components/schemas/CardMarketPriceGuide"
