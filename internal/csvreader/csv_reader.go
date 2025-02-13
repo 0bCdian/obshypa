@@ -24,14 +24,16 @@ func CsvReader(fileLocation string) (CsvData, error) {
 		if index == 0 {
 			continue
 		}
-		quantity, err := strconv.Atoi(string(row[8]))
+		quantity, err := strconv.Atoi(string(row[6]))
 		if err != nil {
 			errors = append(errors, row)
 			continue
 		}
-		csvData = append(csvData, LocalData{ScryfallID: row[10], Quantity: int8(quantity)})
+		csvData = append(csvData, LocalData{ScryfallID: row[8], Quantity: int8(quantity)})
 	}
-	if len(errors) > 0 {
+	var amountOfErrors = len(errors)
+	if amountOfErrors > 0 {
+		fmt.Println("Number of rows with errors = ", amountOfErrors)
 		fmt.Println("the following rows contained errors:")
 		for _, row := range errors {
 			fmt.Println(row)
