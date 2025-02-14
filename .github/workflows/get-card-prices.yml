@@ -10,6 +10,8 @@ jobs:
   UpdatePrices:
     name: Update card prices
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout only csv
         uses: actions/checkout@v4
