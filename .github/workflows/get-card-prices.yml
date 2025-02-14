@@ -23,14 +23,14 @@ jobs:
           ./scripts/save_latest_build_run_to_json.sh
       - name: Save artifact url to environment variable
         run: |
-          jq .artifacts_url last_run.json >> "$GITHUB_ENV"
+          echo $"ARTIFACT_URL:$(jq .artifacts_url last_run.json)">> "$GITHUB_ENV"
       - name: Get latest executable
         uses: actions/download-artifact@v4
         with:
           name: api_data_ingestor
           path: bin
           github-token: ${{ github.token }}
-          run-id: ${{ env.GITHUB_ENV }}
+          run-id: ${{ env.ARTIFACT_URL }}
 
       - name: Execute executable that executes when it's executed
         run: |
