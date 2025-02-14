@@ -1,6 +1,7 @@
 name: Get card prices
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
   # TO-DO Add the schedule once the workflow's body is complete
   # schedule:
   # - cron: "0 5 * * *"
@@ -8,23 +9,35 @@ on: workflow_dispatch
 jobs:
   UpdatePrices:
     name: Update card prices
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout only csv
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            /scripts
+            album_season_of_weaving.csv
+          sparse-checkout-cone-mode: false
+      - name: Get latest succesful build run
+        run: |
+          ./scripts/save_latest_build_run_to_json.sh
+      - name: Save artifact url to environment variable
+        run: |
+          jq .artifacts_url last_run.json >> "$GITHUB_ENV"
       - name: Get latest executable
         uses: actions/download-artifact@v4
         with:
           name: api_data_ingestor
-          path: api_data_ingestor
+          path: bin
           github-token: ${{ github.token }}
-          # TO-DO: We need to set the run_id of the workflow that has the api_data_ingestor artifact.
-          # Ideally, it should be the latest execution of the 'Build cmd project' workflow.
-          # We can get its run_id by storing it in a repository variable on that workflow and accesing it on this one.
-      
-      - name: Execute executable
-        run: ./api_data_ingestor 'Álbum Season of Weaving.csv' # TO-DO: Do we need to download the .csv as well?
-        
+          run-id: ${{ env.GITHUB_ENV }}
+
+      - name: Execute executable that executes when it's executed
+        run: |
+          ./bin/api_data_ingestor album_season_of_weaving.csv
+
       - name: Store card prices
         uses: actions/upload-artifact@v4
         with:
-          name: Precio de cartas.json
-          path: Precio de cartas.json
+          name: precio_de_cartas.json
+          path: precio_de_cartas.json
