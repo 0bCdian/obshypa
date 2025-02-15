@@ -18,19 +18,14 @@ ALL_RUNS=$(
 echo "--------------------------"
 echo "Getting last successful run"
 # get first successful run
-LAST_SUCCESSFUL_RUN=$(
-  echo "$ALL_RUNS" | jq '[.workflow_runs[] | select(.conclusion == "success") ] | first'
+LAST_SUCCESSFUL_RUN_ID=$(
+  echo "$ALL_RUNS" | jq '[.workflow_runs[] | select(.conclusion == "success") ] | first | .id'
 )
-if [[ "$LAST_SUCCESSFUL_RUN" == "null" ]]; then
+if [[ "$LAST_SUCCESSFUL_RUN_ID" == "null" ]]; then
   echo "No successful run found"
   exit 1
 fi
-
-echo "--------------------------"
-echo "Getting last successful run artifact information"
-LAST_ARTIFACT=$(
-  curl -s "$(echo "$LAST_SUCCESSFUL_RUN" | jq -r .artifacts_url)"
-)
-echo "$LAST_ARTIFACT" >last_artifact.json
-echo "--------------------------"
-echo "Finished script, latest artifact information saved to last_artifact.json"
+echo "--------------"
+echo "Saving RUN_ID to github env"
+# saves an envvar called RUN_ID to GITHUB_ENV variable
+echo "RUN_ID=$LAST_SUCCESSFUL_RUN_ID" >>"$GITHUB_ENV"

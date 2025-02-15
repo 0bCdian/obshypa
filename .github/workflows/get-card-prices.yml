@@ -20,19 +20,16 @@ jobs:
             /scripts
             album_season_of_weaving.csv
           sparse-checkout-cone-mode: false
-      - name: Get latest succesful build run
+      - name: Save latest succesful build run to RUN_ID env var
         run: |
-          ./scripts/save_latest_build_artifact_info_to_json.sh
-      - name: Save artifact url to environment variable
-        run: |
-          echo "ARTIFACT_URL=$(jq -r ".artifacts | first | .id" last_artifact.json)">> "$GITHUB_ENV"
+          ./scripts/save_latest_successful_run_to_envvar.sh
       - name: Get latest executable
         uses: actions/download-artifact@v4
         with:
           name: api_data_ingestor
           path: bin
           github-token: ${{ github.token }}
-          run-id: ${{ env.ARTIFACT_URL }}
+          run-id: ${{ env.RUN_ID}}
 
       - name: Execute executable that executes when it's executed
         run: |
