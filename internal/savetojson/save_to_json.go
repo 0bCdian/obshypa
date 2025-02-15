@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func SaveToJson(data any) error {	
+func SaveToJson(data any) error {
 	return SaveToSpecificJson(data, "apiData.json")
 }
 

@@ -1,11 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
-	"encoding/json"
-	"io/ioutil"
 
 	"github.com/shypa/cards-website/internal/apiclient"
 	"github.com/shypa/cards-website/internal/csvreader"
@@ -47,11 +46,11 @@ func main() {
 
 func minimizeCardPriceData() {
 	fmt.Println("Creating minimal card file with prices...")
-	
+
 	// Deserialize apiData.json into a MinimalNecessaryData
-	fileContent, err := ioutil.ReadFile("apiData.json")
+	fileContent, err := os.ReadFile("apiData.json")
 	checkError(err)
-	
+
 	var minimalData []MinimalNecessaryData
 	err = json.Unmarshal(fileContent, &minimalData)
 	if err != nil {
@@ -60,7 +59,7 @@ func minimizeCardPriceData() {
 	}
 
 	// Save to new Json
-	err = savetojson.SaveToSpecificJson(minimalData, "Precio de cartas.json")
+	err = savetojson.SaveToSpecificJson(minimalData, "precio_de_cartas.json")
 	checkError(err)
 
 	fmt.Println("File created!")
