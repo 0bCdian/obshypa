@@ -30,7 +30,9 @@ jobs:
           path: bin
           github-token: ${{ github.token }}
           run-id: ${{ env.RUN_ID}}
-
+      - name: Change executable permissions
+        run: |
+          chmod +x ./bin/api_data_ingestor
       - name: Execute executable that executes when it's executed
         run: |
           ./bin/api_data_ingestor album_season_of_weaving.csv
