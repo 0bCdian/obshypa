@@ -27,28 +27,28 @@ func main() {
 
 	csvData, err := csvreader.CsvReader(fileLocation.manaboxCsv)
 	checkError(err)
-
+	fmt.Println("Getting scryfallData...")
 	scryfallData, err := apiclient.GetScryfallCardData(csvData)
 	checkError(err)
-
+	fmt.Println("Getting cardMarketData...")
 	cardMarketData, err := apiclient.GetCardmarketData(&scryfallData)
 	checkError(err)
-
-	err = savetojson.SaveToJson(cardMarketData)
+	const json_filename = "api_data.json"
+	err = savetojson.SaveToSpecificJson(cardMarketData, json_filename)
 	checkError(err)
 
 	// TODO: Maybe transform cardMarketData (type []Card) into []MinimalNecessaryData to avoid having to read a .json with info we already have...
 
-	minimizeCardPriceData()
+	minimizeCardPriceData(json_filename)
 
 	fmt.Println("Finished with the script!")
 }
 
-func minimizeCardPriceData() {
+func minimizeCardPriceData(original_data_json_file string) {
 	fmt.Println("Creating minimal card file with prices...")
 
 	// Deserialize apiData.json into a MinimalNecessaryData
-	fileContent, err := os.ReadFile("apiData.json")
+	fileContent, err := os.ReadFile(original_data_json_file)
 	checkError(err)
 
 	var minimalData []MinimalNecessaryData
@@ -59,10 +59,11 @@ func minimizeCardPriceData() {
 	}
 
 	// Save to new Json
-	err = savetojson.SaveToSpecificJson(minimalData, "precio_de_cartas.json")
+	const json_filename = "precio_de_cartas.json"
+	err = savetojson.SaveToSpecificJson(minimalData, json_filename)
 	checkError(err)
 
-	fmt.Println("File created!")
+	fmt.Printf("File created at %v", json_filename)
 }
 
 func checkError(err error) {

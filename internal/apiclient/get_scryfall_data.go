@@ -18,6 +18,7 @@ func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 	}
 	var scryfallData []ScryfallData
 	for _, card := range csvData {
+		fmt.Printf("Getting data for cardID: %v\n", card.ScryfallID)
 		url := fmt.Sprintf(scryfall_url, card.ScryfallID)
 		data, err := callScryfallApi(url)
 		if err != nil {
@@ -27,6 +28,7 @@ func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 		newCard := ScryfallData{Quantity: card.Quantity, ScryfallApiData: *data}
 		scryfallData = append(scryfallData, newCard)
 		time.Sleep(time.Millisecond * 150)
+		fmt.Println("--------------------------------------------------------------------------")
 	}
 	return scryfallData, nil
 }
