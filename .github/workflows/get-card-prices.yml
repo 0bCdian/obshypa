@@ -2,9 +2,9 @@ name: Get card prices
 
 on:
   workflow_dispatch:
-  # TO-DO Add the schedule once the workflow's body is complete
-  # schedule:
-  # - cron: "0 5 * * *"
+
+  schedule:
+  - cron: "0 5 * * *"
 
 jobs:
   UpdatePrices:
@@ -33,7 +33,7 @@ jobs:
       - name: Change executable permissions
         run: |
           chmod +x ./bin/api_data_ingestor
-      - name: Execute executable that executes when it's executed
+      - name: Execute executable that executes when it's executed executably
         run: |
           ./bin/api_data_ingestor album_season_of_weaving.csv
 
