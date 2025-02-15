@@ -25,7 +25,7 @@ jobs:
           ./scripts/save_latest_build_artifact_info_to_json.sh
       - name: Save artifact url to environment variable
         run: |
-          echo $"ARTIFACT_URL:$(jq -r ".artifacts | first | .id" last_artifact.json)">> "$GITHUB_ENV"
+          echo "ARTIFACT_URL:$(jq -r ".artifacts | first | .id" last_artifact.json)">> "$GITHUB_ENV"
       - name: Get latest executable
         uses: actions/download-artifact@v4
         with:
