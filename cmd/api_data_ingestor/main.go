@@ -63,7 +63,7 @@ func minimizeCardPriceData(original_data_json_file string) {
 	err = savetojson.SaveToSpecificJson(minimalData, json_filename)
 	checkError(err)
 
-	fmt.Printf("File created at %v", json_filename)
+	fmt.Printf("File created at %v\n", json_filename)
 }
 
 func checkError(err error) {
