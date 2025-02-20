@@ -1,0 +1,67 @@
+/* Reset margins and paddings */
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Actual style */
+:root {
+  --mandarin: #f7cb62; 
+}
+
+#Cabecera {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+}
+
+#Cuerpo {
+  padding: 20px;
+}
+
+.Mikan {
+  color: white;
+  background-color: var(--mandarin);
+}
+
+h1 {
+  text-align: left;
+  font-size: xx-large;
+}
+
+nav {
+  text-align: right;
+}
+
+a {
+  padding: 10px;
+  font-weight: bolder;
+  font-size: large;
+}
+
+h2 {
+  background-color: #ffe6aa;
+  color: #5f5f5f;
+  padding: 15px;
+  box-shadow: 0px 5px 3px #00000035;
+}
+
+p {
+  font-family: verdana;
+  font-size: 20px;
+}
+
+footer {
+  padding: 20px;
+  font-size: xx-large;
+}
+
+td {
+  background-color: var(--mandarin);
+  border-radius: 10%;
+  padding: 15px;
+  padding-top: 40px;
+  text-align: center;
+}
