@@ -51,13 +51,15 @@
   background-color: var(--peel);
   color: var(--metal);
   font-weight: bold;
+  justify-content: center;
   align-items: center;
   text-align: center;
   margin: 10px;
   border-radius: var(--radius-style);
-  padding-bottom: 18px;
+  padding-bottom: 15px;
   max-width: calc(var(--cardWidth) + var(--cardImagePadding)*2);
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
 }
 
 .ImageSleeve {
@@ -67,17 +69,11 @@
   margin-bottom: 10px;
 }
 
-.CardInfo {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
 .PriceInfo {
   background-color: white;
   border-radius: 12% / 50%;
   width: fit-content;
-  align-self: center;
+  margin: 5px;
   padding: 10px;
   padding-left: 20px;
   padding-right: 20px;

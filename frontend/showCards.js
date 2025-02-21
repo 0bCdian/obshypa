@@ -448,17 +448,13 @@ for (let card of cards) {
     cardImage.src = card.image_uris.png;
     cardImage.className = "ImageSleeve";
 
-    let cardInfo = document.createElement("section");
-    cardInfo.className = "CardInfo";
-
-    let cardName = document.createElement("a");
+    let cardName = document.createElement("p");
     cardName.textContent = card.name;
 
-    let cardPriceRange = document.createElement("a");
-    cardPriceRange.textContent = card.Prices.low + "€ — " + card.Prices.avg + "€";
+    let cardPriceRange = document.createElement("p");
+    cardPriceRange.textContent = card.Prices.low + " € — " + card.Prices.avg + " €";
     cardPriceRange.className = "PriceInfo";
 
-    cardInfo.append(cardName, cardPriceRange);
-    section.append(cardImage, document.createElement("br"), cardInfo);
+    section.append(cardImage, document.createElement("br"), cardName, cardPriceRange);
     document.getElementById("Gallery").append(section);
 }
