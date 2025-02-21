@@ -42,3 +42,5 @@ jobs:
         with:
           name: precio_de_cartas.json
           path: precio_de_cartas.json
+          retention-days: 7
+
