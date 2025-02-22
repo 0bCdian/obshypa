@@ -103,11 +103,9 @@ h2 {
 }
 
 footer {
+  /* TO-DO: Make a footer that stays on the bottom part of the web and works correctly when there is scroll... */
   padding: var(--general-padding);
   font-size: xx-large;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
   box-shadow: 0px -5px 3px #00000035;
   text-shadow: #00000075 0 0 8px;
 }
