@@ -25,6 +25,7 @@ func GetCardmarketData(scryfallData *[]ScryfallData) ([]Card, error) {
 		}
 		currentCard.Prices = cardPrice
 		cards = append(cards, currentCard)
+		// TO-DO: What happens when we have several cards with the same CardMarketID because they are in different languages?
 	}
 
 	return cards, nil
