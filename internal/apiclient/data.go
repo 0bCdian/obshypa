@@ -10,6 +10,7 @@ type ScryfallApiData struct {
 	TcgplayerID   int    `json:"tcgplayer_id"`
 	CardmarketID  int    `json:"cardmarket_id"`
 	Name          string `json:"name"`
+	PrintedName   string `json:"printed_name"`
 	Lang          string `json:"lang"`
 	ReleasedAt    string `json:"released_at"`
 	URI           string `json:"uri"`

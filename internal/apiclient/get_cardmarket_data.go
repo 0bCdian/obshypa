@@ -2,57 +2,52 @@ package apiclient
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
 )
 
 const cardMarketUrl = "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_1.json"
 
 func GetCardmarketData(scryfallData *[]ScryfallData) ([]Card, error) {
-	cardmarketData, err := callCardmarketApi(cardMarketUrl)
+	cardmarketData, err := getCardmarketPriceGuide()
 	if err != nil {
 		return nil, err
 	}
 
-	cardPricesMap := make(map[int]Card)
+	cardPricesMap := make(map[int][]Card)
 	for _, scryFallCard := range *scryfallData {
-		cardPricesMap[scryFallCard.CardmarketID] = Card{ScryfallData: scryFallCard}
+		//We need to have an array of cards on each index of the map, as several versions of the same card share the same CardmarketID
+		if cardPricesMap[scryFallCard.CardmarketID] == nil {
+			// Add first card to the list if there's no other with the same CardmarketID
+			cardPricesMap[scryFallCard.CardmarketID] = []Card{{ScryfallData: scryFallCard}}
+		} else {
+			// Add another card to the list with the same CardmarketID
+			cardPricesMap[scryFallCard.CardmarketID] = append(cardPricesMap[scryFallCard.CardmarketID], Card{ScryfallData: scryFallCard})
+		}
 	}
 
 	var cards []Card
 	for _, cardPrice := range *cardmarketData {
-		currentCard, exists := cardPricesMap[cardPrice.IDProduct]
+		currentCardVersions, exists := cardPricesMap[cardPrice.IDProduct]
 		if !exists {
 			continue
 		}
-		currentCard.Prices = cardPrice
-		cards = append(cards, currentCard)
+
+		for _, cardVersion := range currentCardVersions {
+			cardVersion.Prices = cardPrice
+			cards = append(cards, cardVersion)
+		}
 	}
 
 	return cards, nil
 }
 
-func callCardmarketApi(url string) (*[]CardMarketPriceGuide, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func getCardmarketPriceGuide() (*[]CardMarketPriceGuide, error) {
+	info, err := callRESTAPIGetMethod(cardMarketUrl)
 	if err != nil {
 		return nil, err
 	}
-	req.Header = http.Header{
-		"Accept":     {"application/json"},
-		"User-Agent": {"shypa/1.0"},
-	}
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
-		return nil, err
-	}
-	defer res.Body.Close()
-	stringBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	var cardmarketData CardmarketData
-	err = json.Unmarshal(stringBody, &cardmarketData)
+	err = json.Unmarshal(info, &cardmarketData)
 	if err != nil {
 		return nil, err
 	}
