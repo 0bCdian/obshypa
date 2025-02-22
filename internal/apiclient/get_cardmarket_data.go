@@ -12,20 +12,29 @@ func GetCardmarketData(scryfallData *[]ScryfallData) ([]Card, error) {
 		return nil, err
 	}
 
-	cardPricesMap := make(map[int]Card)
+	cardPricesMap := make(map[int][]Card)
 	for _, scryFallCard := range *scryfallData {
-		cardPricesMap[scryFallCard.CardmarketID] = Card{ScryfallData: scryFallCard}
+		//We need to have an array of cards on each index of the map, as several versions of the same card share the same CardmarketID
+		if cardPricesMap[scryFallCard.CardmarketID] == nil {
+			// Add first card to the list if there's no other with the same CardmarketID
+			cardPricesMap[scryFallCard.CardmarketID] = []Card{{ScryfallData: scryFallCard}}
+		} else {
+			// Add another card to the list with the same CardmarketID
+			cardPricesMap[scryFallCard.CardmarketID] = append(cardPricesMap[scryFallCard.CardmarketID], Card{ScryfallData: scryFallCard})
+		}
 	}
 
 	var cards []Card
 	for _, cardPrice := range *cardmarketData {
-		currentCard, exists := cardPricesMap[cardPrice.IDProduct]
+		currentCardVersions, exists := cardPricesMap[cardPrice.IDProduct]
 		if !exists {
 			continue
 		}
-		currentCard.Prices = cardPrice
-		cards = append(cards, currentCard)
-		// TO-DO: What happens when we have several cards with the same CardMarketID because they are in different languages?
+
+		for _, cardVersion := range currentCardVersions {
+			cardVersion.Prices = cardPrice
+			cards = append(cards, cardVersion)
+		}
 	}
 
 	return cards, nil
