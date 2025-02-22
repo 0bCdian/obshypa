@@ -3,14 +3,13 @@ package apiclient
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"time"
 
 	"github.com/shypa/cards-website/internal/csvreader"
 )
 
-const scryfall_url = "https://api.scryfall.com/cards/%s"
+const scryfall_url_by_id = "https://api.scryfall.com/cards/%s" // Add card ID
+const scryfall_url_by_lang = "https://api.scryfall.com/cards/%s/%s/%s" // Add card set code, collector number and language
 
 func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 	if len(csvData) < 1 {
@@ -18,42 +17,54 @@ func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 	}
 	var scryfallData []ScryfallData
 	for _, card := range csvData {
-		fmt.Printf("Getting data for cardID: %v\n", card.ScryfallID)
-		url := fmt.Sprintf(scryfall_url, card.ScryfallID)
-		data, err := callScryfallApi(url)
+		data, err := getCardByLang(card)
 		if err != nil {
-			fmt.Printf("error getting data for card:%v\nerror:%v", card.ScryfallID, err.Error())
+			fmt.Printf("Error getting data for card:%v\nError:%v", card.ScryfallID, err.Error())
 			continue
 		}
 		newCard := ScryfallData{Quantity: card.Quantity, ScryfallApiData: *data}
+		
+		// Get CardMarketID for cards that are not in English
+		if newCard.Lang != "en" {
+			data, err = getCardByID(card)
+			if err != nil {
+				fmt.Printf("Error getting data for card:%v\nError:%v", card.ScryfallID, err.Error())
+				continue
+			}
+
+			newCard.CardmarketID = data.CardmarketID
+		}
+
 		scryfallData = append(scryfallData, newCard)
-		time.Sleep(time.Millisecond * 150)
 		fmt.Println("--------------------------------------------------------------------------")
 	}
 	return scryfallData, nil
 }
 
+func getCardByID(card csvreader.LocalData) (*ScryfallApiData, error) {
+	fmt.Println("Getting data for cardID: ", card.ScryfallID)
+	url := fmt.Sprintf(scryfall_url_by_id, card.ScryfallID)
+	data, err := callScryfallApi(url)
+	return data, err
+}
+
+func getCardByLang(card csvreader.LocalData) (*ScryfallApiData, error) {
+	fmt.Println("Getting data for card ", card.CollectorNumber, " in set ", card.SetCode, " and language ", card.Language)
+	url := fmt.Sprintf(scryfall_url_by_lang, card.SetCode, card.CollectorNumber, card.Language)
+	data, err := callScryfallApi(url)
+	return data, err
+}
+
 func callScryfallApi(url string) (*ScryfallApiData, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	info, err := callRESTAPIGetMethod(url)
+	time.Sleep(time.Millisecond * 150) // Make sure to have delay between API calls
+
 	if err != nil {
 		return nil, err
 	}
-	req.Header = http.Header{
-		"Accept":     {"application/json"},
-		"User-Agent": {"shypa/1.0"},
-	}
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
-		return nil, err
-	}
-	defer res.Body.Close()
+
 	var data ScryfallApiData
-	stringBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(stringBody, &data)
+	err = json.Unmarshal(info, &data)
 	if err != nil {
 		return nil, err
 	}

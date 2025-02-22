@@ -2,14 +2,12 @@ package apiclient
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
 )
 
 const cardMarketUrl = "https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_1.json"
 
 func GetCardmarketData(scryfallData *[]ScryfallData) ([]Card, error) {
-	cardmarketData, err := callCardmarketApi(cardMarketUrl)
+	cardmarketData, err := getCardmarketPriceGuide()
 	if err != nil {
 		return nil, err
 	}
@@ -32,27 +30,14 @@ func GetCardmarketData(scryfallData *[]ScryfallData) ([]Card, error) {
 	return cards, nil
 }
 
-func callCardmarketApi(url string) (*[]CardMarketPriceGuide, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func getCardmarketPriceGuide() (*[]CardMarketPriceGuide, error) {
+	info, err := callRESTAPIGetMethod(cardMarketUrl)
 	if err != nil {
 		return nil, err
 	}
-	req.Header = http.Header{
-		"Accept":     {"application/json"},
-		"User-Agent": {"shypa/1.0"},
-	}
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
-		return nil, err
-	}
-	defer res.Body.Close()
-	stringBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
+
 	var cardmarketData CardmarketData
-	err = json.Unmarshal(stringBody, &cardmarketData)
+	err = json.Unmarshal(info, &cardmarketData)
 	if err != nil {
 		return nil, err
 	}
