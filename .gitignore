@@ -28,3 +28,6 @@ go.work.sum
 # .json files
 
 *.json
+
+# Except firebase.json
+!firebase.json
