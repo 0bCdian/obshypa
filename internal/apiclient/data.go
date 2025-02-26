@@ -113,7 +113,7 @@ type ScryfallApiData struct {
 	} `json:"purchase_uris"`
 }
 type ScryfallData struct {
-	Quantity int8
+	Quantity int8 `json:"quantity"`
 	ScryfallApiData
 }
 
@@ -142,5 +142,5 @@ type CardmarketData struct {
 
 type Card struct {
 	ScryfallData
-	Prices CardMarketPriceGuide
+	Prices CardMarketPriceGuide `json:"prices"`
 }
