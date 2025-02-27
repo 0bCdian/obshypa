@@ -6,12 +6,12 @@
 
 ## PA EJECUTAR
 
-`./api_data_ingestor 'album_season_of_weaving.csv'`
+`./bin/api_data_ingestor 'album_season_of_weaving.csv'`
 
 ## PA DESAROLLAR
 
-COMPILÁ `go build -o ./api_data_ingestor ./cmd/api_data_ingestor` GENERÁ EL
-api_data.json `./bin/api_data_ingestor album_season_of_weaving`
+COMPILÁ `go build -o ./bin/api_data_ingestor ./cmd/api_data_ingestor` GENERÁ EL
+api_data.json `./bin/api_data_ingestor album_season_of_weaving.csv`
 
 SI YA TENIAS EL ARCHIVO POS NO LO HAGAS Y TE ESO QUE TE AHORRAS
 CORRÉ ENTORNO:
