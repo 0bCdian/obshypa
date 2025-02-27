@@ -19,11 +19,12 @@
 
 	<h2>En venta</h2>
 
+
 	<section id="Cuerpo">
 
-		<section id="Gallery">
-			<script src="showCards.js"> </script>
-		</section>
+		<button type="button" id="GoBackButton" onclick="moveBack()">◀</button>
+		<section id="Gallery"></section>
+		<button type="button" id="GoForwardButton" onclick="moveForward()">▶</button>
 
 	</section>
 </body>
@@ -31,5 +32,102 @@
 <footer class="Mikan">
 	It's us: OBSHYPA
 </footer>
+
+<script>
+
+	let cardsPerPage = 12;
+	let currentOffset = 0;
+
+	showCards();
+	disableGoBackButton();
+
+	function moveBack() {
+		currentOffset -= cardsPerPage;
+		if (currentOffset <= 0) {
+			disableGoBackButton();
+			currentOffset = 0;
+		}
+
+		enableGoForwardButton();
+		refreshCards();
+	}
+
+	function moveForward() {
+		currentOffset += cardsPerPage;
+		enableGoBackButton();
+		refreshCards();
+		
+	}
+
+	function refreshCards() {
+		const gallery = document.getElementById("Gallery");
+		gallery.replaceChildren(); // This should remove all the cards shown until now
+
+		showCards();
+	}
+
+	async function getCards() {
+		response = await fetch(`http://localhost:8000/cards?limit=${cardsPerPage}&offset=${currentOffset}`);
+		const cards = await response.json();
+		return cards;
+	}
+
+	async function showCards() {
+		const cards = await getCards();
+
+		// Iterate through cards
+		for (const card of cards) {
+
+			// Add card component to web
+			const section = document.createElement("section");
+			section.id = card.id;
+			section.className = "CardSleeve";
+
+
+			const cardImage = document.createElement("img");
+			cardImage.src = card.image_uris.png;
+			cardImage.className = "ImageSleeve";
+
+			const cardName = document.createElement("p");
+			cardName.textContent = card.printed_name ? card.printed_name : card.name;
+
+			const cardPriceRange = document.createElement("p");
+			cardPriceRange.textContent = `${card.prices.low} € — ${card.prices.avg} €`;
+			cardPriceRange.className = "PriceInfo";
+
+			section.append(cardImage, document.createElement("br"), cardName, cardPriceRange);
+			document.getElementById("Gallery").append(section);
+		}
+
+		if (cards.length < cardsPerPage) {
+			disableGoForwardButton(); //TO-DO: We need to be able to detect the last page of cards better. This won't work on certain situations.
+		}
+	}
+
+	function disableGoBackButton() {
+		getGoBackButton().setAttribute("disabled", "");
+	}
+
+	function enableGoBackButton() {
+		getGoBackButton().removeAttribute("disabled");
+	}
+
+	function disableGoForwardButton() {
+		getGoForwardButton().setAttribute("disabled", "");
+	}
+
+	function enableGoForwardButton() {
+		getGoForwardButton().removeAttribute("disabled");
+	}
+
+	function getGoBackButton() {
+		return document.getElementById("GoBackButton");
+	}
+
+	function getGoForwardButton() {
+		return document.getElementById("GoForwardButton");
+	}
+
+</script>
 
 </html>
