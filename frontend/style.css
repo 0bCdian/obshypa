@@ -107,6 +107,7 @@ h2 {
 }
 
 button {
+  /* TO-DO: Make the buttons more accesible on smaller screen sizes */
   background-color: var(--metal);
   color: white;
   font-size: xx-large;
