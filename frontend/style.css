@@ -16,7 +16,7 @@
   --cardImagePadding: 18px;
 }
 
-#Cabecera {
+#Cabecera div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

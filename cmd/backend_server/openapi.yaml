@@ -59,26 +59,7 @@ components:
         image_status:
           type: string
         image_uris:
-          type: object
-          properties:
-            small:
-              type: string
-              format: uri
-            normal:
-              type: string
-              format: uri
-            large:
-              type: string
-              format: uri
-            png:
-              type: string
-              format: uri
-            art_crop:
-              type: string
-              format: uri
-            border_crop:
-              type: string
-              format: uri
+          $ref: "#/components/schemas/ScryfallImageUris"
         mana_cost:
           type: string
         cmc:
@@ -103,6 +84,10 @@ components:
           type: array
           items:
             type: string
+        card_faces:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScryfallCardFace"
         legalities:
           type: object
           properties:
@@ -269,6 +254,36 @@ components:
             cardhoarder:
               type: string
               format: uri
+    ScryfallCardFace:
+      type: object
+      properties:
+        object:
+          type: string
+        name:
+          type: string
+        image_uris:
+            $ref: "#/components/schemas/ScryfallImageUris"
+    ScryfallImageUris:
+      type: object
+      properties:
+        small:
+          type: string
+          format: uri
+        normal:
+          type: string
+          format: uri
+        large:
+          type: string
+          format: uri
+        png:
+          type: string
+          format: uri
+        art_crop:
+          type: string
+          format: uri
+        border_crop:
+          type: string
+          format: uri
     ScryfallData:
       type: object
       allOf:
