@@ -21,7 +21,6 @@
 		<h2>En venta</h2>
 	</section>
 
-
 	<section id="Cuerpo">
 
 		<button type="button" id="GoBackButton" onclick="moveBack()">◀</button>
@@ -74,23 +73,30 @@
 		for (const card of cards) {
 
 			// Add card component to web
-			const section = document.createElement("section");
+			const section = createSection();
 			section.id = card.id;
 			section.className = "CardSleeve";
 
-
-			const cardImage = document.createElement("img");
+			const cardImageZone = createSection();
+			cardImageZone.className = "ImageSleeve";
+			const cardImage = createImage();
 			cardImage.src = card.image_uris.png ? card.image_uris.png : card.card_faces[0].image_uris.png;
-			cardImage.className = "ImageSleeve";
+			cardImageZone.append(cardImage);
 
-			const cardName = document.createElement("p");
+			const cardName = createParagraph();
 			cardName.textContent = card.printed_name ? card.printed_name : card.name;
+			cardName.className = "CardName";
 
-			const cardPriceRange = document.createElement("p");
+			//TO-DO: Añadir la cantidad de cartas a la izquierda de la guía de precios
+			const cardQuantity = createParagraph();
+			cardQuantity.textContent = card.quantity;
+			cardQuantity.className = "QuantityInfo";
+
+			const cardPriceRange = createParagraph();
 			cardPriceRange.textContent = `${card.prices.low} € — ${card.prices.avg} €`;
 			cardPriceRange.className = "PriceInfo";
 
-			section.append(cardImage, document.createElement("br"), cardName, cardPriceRange);
+			section.append(cardImageZone, document.createElement("br"), cardName, cardQuantity, cardPriceRange);
 
 			sleevedCards.push(section);
 		}
@@ -128,6 +134,18 @@
 
 	function getGoForwardButton() {
 		return document.getElementById("GoForwardButton");
+	}
+
+	function createSection() {
+		return document.createElement("section");
+	}
+
+	function createImage() {
+		return document.createElement("img");
+	}
+
+	function createParagraph() {
+		return document.createElement("p");
 	}
 
 </script>
