@@ -2,7 +2,7 @@
 
 ## PA COMPILAR TÓ
 
-`make`
+`make -j`
 
 ## PA COMPILAR UNO U OTRO
 
