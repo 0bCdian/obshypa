@@ -31,7 +31,7 @@ func CsvReader(fileLocation string) (CsvData, error) {
 			continue
 		}
 
-		csvData = append(csvData, LocalData{ScryfallID: row[8], Quantity: int8(quantity), SetCode: row[1], CollectorNumber: row[3], Language: row[13]})
+		csvData = append(csvData, LocalData{ScryfallID: row[8], Quantity: int8(quantity), SetCode: row[1], CollectorNumber: row[3], Language: row[13], Foil: row[4]})
 	}
 	var amountOfErrors = len(errors)
 	if amountOfErrors > 0 {

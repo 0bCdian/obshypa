@@ -79,6 +79,12 @@
 
 			const cardImageZone = createSection();
 			cardImageZone.className = "ImageSleeve";
+       if (card.foil) {
+				const foilEffect = document.createElement("img");
+				foilEffect.src = "Foil_filter.png";
+				foilEffect.className = "FoilEffect";
+				cardImageZone.append(foilEffect)
+			}
 			const cardImage = createImage();
 			cardImage.src = card.image_uris.png ? card.image_uris.png : card.card_faces[0].image_uris.png;
 			cardImageZone.append(cardImage);
@@ -94,7 +100,7 @@
 			const cardPriceRange = createParagraph();
 			cardPriceRange.textContent = `${card.prices.low} € — ${card.prices.avg} €`;
 			cardPriceRange.className = "PriceInfo";
-
+      
 			section.append(cardImageZone, document.createElement("br"), cardName, cardQuantity, cardPriceRange);
 
 			sleevedCards.push(section);

@@ -86,6 +86,11 @@
   justify-self: center;
 }
 
+.FoilEffect{
+  opacity: 50%;
+  position: absolute;
+}
+
 .PriceInfo {
   background-color: white;
   border-radius: 12% / 50%;
