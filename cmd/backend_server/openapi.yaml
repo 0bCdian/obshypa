@@ -143,8 +143,6 @@ components:
           type: boolean
         foil:
           type: boolean
-        nonfoil:
-          type: boolean
         finishes:
           type: array
           items:

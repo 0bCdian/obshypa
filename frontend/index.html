@@ -78,10 +78,17 @@
 			section.id = card.id;
 			section.className = "CardSleeve";
 
-
+			const imageSleeve = document.createElement("section");
+			imageSleeve.className = "ImageSleeve";
+			if (card.foil) {
+				const foilEffect = document.createElement("img");
+				foilEffect.src = "Foil_filter.png";
+				foilEffect.className = "FoilEffect";
+				imageSleeve.append(foilEffect)
+			}
 			const cardImage = document.createElement("img");
 			cardImage.src = card.image_uris.png ? card.image_uris.png : card.card_faces[0].image_uris.png;
-			cardImage.className = "ImageSleeve";
+			imageSleeve.append(cardImage);
 
 			const cardName = document.createElement("p");
 			cardName.textContent = card.printed_name ? card.printed_name : card.name;
@@ -90,7 +97,7 @@
 			cardPriceRange.textContent = `${card.prices.low} € — ${card.prices.avg} €`;
 			cardPriceRange.className = "PriceInfo";
 
-			section.append(cardImage, document.createElement("br"), cardName, cardPriceRange);
+			section.append(imageSleeve, document.createElement("br"), cardName, cardPriceRange);
 
 			sleevedCards.push(section);
 		}

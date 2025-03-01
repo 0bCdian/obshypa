@@ -55,8 +55,6 @@ type ScryfallApiData struct {
 	} `json:"legalities"`
 	Games           []string `json:"games"`
 	Reserved        bool     `json:"reserved"`
-	Foil            bool     `json:"foil"`
-	Nonfoil         bool     `json:"nonfoil"`
 	Finishes        []string `json:"finishes"`
 	Oversized       bool     `json:"oversized"`
 	Promo           bool     `json:"promo"`
@@ -124,6 +122,7 @@ type ScryfallImageUris struct {
 
 type ScryfallData struct {
 	Quantity int8 `json:"quantity"`
+	Foil     bool `json:"foil"` // In Scryfall it means that the card can have a foil finish. This seems like an obsolete field, as it doesn't show on Scryfall's API documentation. We're making it mean that the physical cards have a foil finish.
 	ScryfallApiData
 }
 
