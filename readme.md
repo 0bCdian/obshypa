@@ -10,13 +10,31 @@
 
 ## PA DESAROLLAR
 
-COMPILÁ `go build -o ./bin/api_data_ingestor ./cmd/api_data_ingestor` GENERÁ EL
-api_data.json `./bin/api_data_ingestor album_season_of_weaving.csv`
+COMPILÁ Y GENERÁ EL `api_data.json` SI NO LO TENÉS YA.
 
-SI YA TENIAS EL ARCHIVO POS NO LO HAGAS Y TE ESO QUE TE AHORRAS
-CORRÉ ENTORNO:
+CORRÉ ENTORNO.
 
 `docker compose up -d --wait`
+
+### PA FORZAR CAMBIOS EN DOCKER
+
+SI SE ESTÁN EJECUTANDO LOS CONTENEDORES, PARARLOS.
+
+`sudo docker compose down`
+
+PODAR ELEMENTOS SIN USO EN DOCKER.
+
+`sudo docker system prune`
+
+SI CON ESO NO BASTA, FORZAR ELIMINACIÓN DE IMÁGENES DE DOCKER.
+
+`sudo docker rmi $(sudo docker image ls -q)`
+
+COMPROBAR QUE NO QUEDAN IMÁGENES.
+
+`sudo docker image ls`
+
+### URLS
 
 ```bash
 localhost:4000 # firebase emulator ui

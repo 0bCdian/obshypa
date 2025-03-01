@@ -8,7 +8,7 @@ import (
 	"github.com/shypa/cards-website/internal/csvreader"
 )
 
-const scryfall_url_by_id = "https://api.scryfall.com/cards/%s" // Add card ID
+const scryfall_url_by_id = "https://api.scryfall.com/cards/%s"         // Add card ID
 const scryfall_url_by_lang = "https://api.scryfall.com/cards/%s/%s/%s" // Add card set code, collector number and language
 
 func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
@@ -22,8 +22,8 @@ func GetScryfallCardData(csvData csvreader.CsvData) ([]ScryfallData, error) {
 			fmt.Printf("Error getting data for card:%v\nError:%v", card.ScryfallID, err.Error())
 			continue
 		}
-		newCard := ScryfallData{Quantity: card.Quantity, ScryfallApiData: *data}
-		
+		newCard := ScryfallData{Quantity: card.Quantity, Foil: card.Foil != "normal", ScryfallApiData: *data}
+
 		// Get CardMarketID for cards that are not in English
 		if newCard.Lang != "en" {
 			data, err = getCardByID(card)
