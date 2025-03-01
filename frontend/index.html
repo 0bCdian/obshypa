@@ -8,16 +8,18 @@
 
 <body>
 	<section id="Cabecera" class="Mikan">
-		<h1>Galería de Obshypa</h1>
-		<nav>
-			<a>En venta</a>
-			<a>En busca</a>
-			<a>Metodología</a>
-			<a>Quiénes somos</a>
-		</nav>
-	</section>
+		<div>
+			<h1>Galería de Obshypa</h1>
+			<nav>
+				<a>En venta</a>
+				<a>En busca</a>
+				<a>Metodología</a>
+				<a>Quiénes somos</a>
+			</nav>
+		</div>
 
-	<h2>En venta</h2>
+		<h2>En venta</h2>
+	</section>
 
 
 	<section id="Cuerpo">
@@ -27,11 +29,11 @@
 		<button type="button" id="GoForwardButton" onclick="moveForward()">▶</button>
 
 	</section>
-</body>
 
-<footer class="Mikan">
-	It's us: OBSHYPA
-</footer>
+	<footer class="Mikan">
+		It's us: OBSHYPA
+	</footer>
+</body>
 
 <script>
 
@@ -49,20 +51,12 @@
 		}
 
 		enableGoForwardButton();
-		refreshCards();
+		showCards();
 	}
 
 	function moveForward() {
 		currentOffset += cardsPerPage;
 		enableGoBackButton();
-		refreshCards();
-		
-	}
-
-	function refreshCards() {
-		const gallery = document.getElementById("Gallery");
-		gallery.replaceChildren(); // This should remove all the cards shown until now
-
 		showCards();
 	}
 
@@ -76,6 +70,7 @@
 		const cards = await getCards();
 
 		// Iterate through cards
+		let sleevedCards = [];
 		for (const card of cards) {
 
 			// Add card component to web
@@ -85,7 +80,7 @@
 
 
 			const cardImage = document.createElement("img");
-			cardImage.src = card.image_uris.png;
+			cardImage.src = card.image_uris.png ? card.image_uris.png : card.card_faces[0].image_uris.png;
 			cardImage.className = "ImageSleeve";
 
 			const cardName = document.createElement("p");
@@ -96,8 +91,11 @@
 			cardPriceRange.className = "PriceInfo";
 
 			section.append(cardImage, document.createElement("br"), cardName, cardPriceRange);
-			document.getElementById("Gallery").append(section);
+
+			sleevedCards.push(section);
 		}
+
+		getGallery().replaceChildren(...sleevedCards);
 
 		if (cards.length < cardsPerPage) {
 			disableGoForwardButton(); //TO-DO: We need to be able to detect the last page of cards better. This won't work on certain situations.
@@ -118,6 +116,10 @@
 
 	function enableGoForwardButton() {
 		getGoForwardButton().removeAttribute("disabled");
+	}
+
+	function getGallery() {
+		return document.getElementById("Gallery");
 	}
 
 	function getGoBackButton() {

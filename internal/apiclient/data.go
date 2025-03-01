@@ -1,40 +1,34 @@
 package apiclient
 
 type ScryfallApiData struct {
-	Object        string `json:"object"`
-	ID            string `json:"id"`
-	OracleID      string `json:"oracle_id"`
-	MultiverseIds []int  `json:"multiverse_ids"`
-	MtgoID        int    `json:"mtgo_id"`
-	MtgoFoilID    int    `json:"mtgo_foil_id"`
-	TcgplayerID   int    `json:"tcgplayer_id"`
-	CardmarketID  int    `json:"cardmarket_id"`
-	Name          string `json:"name"`
-	PrintedName   string `json:"printed_name"`
-	Lang          string `json:"lang"`
-	ReleasedAt    string `json:"released_at"`
-	URI           string `json:"uri"`
-	ScryfallURI   string `json:"scryfall_uri"`
-	Layout        string `json:"layout"`
-	HighresImage  bool   `json:"highres_image"`
-	ImageStatus   string `json:"image_status"`
-	ImageUris     struct {
-		Small      string `json:"small"`
-		Normal     string `json:"normal"`
-		Large      string `json:"large"`
-		Png        string `json:"png"`
-		ArtCrop    string `json:"art_crop"`
-		BorderCrop string `json:"border_crop"`
-	} `json:"image_uris"`
-	ManaCost      string   `json:"mana_cost"`
-	Cmc           float64  `json:"cmc"`
-	TypeLine      string   `json:"type_line"`
-	OracleText    string   `json:"oracle_text"`
-	Power         string   `json:"power"`
-	Toughness     string   `json:"toughness"`
-	Colors        []string `json:"colors"`
-	ColorIdentity []string `json:"color_identity"`
-	Keywords      []string `json:"keywords"`
+	Object        string             `json:"object"`
+	ID            string             `json:"id"`
+	OracleID      string             `json:"oracle_id"`
+	MultiverseIds []int              `json:"multiverse_ids"`
+	MtgoID        int                `json:"mtgo_id"`
+	MtgoFoilID    int                `json:"mtgo_foil_id"`
+	TcgplayerID   int                `json:"tcgplayer_id"`
+	CardmarketID  int                `json:"cardmarket_id"`
+	Name          string             `json:"name"`
+	PrintedName   string             `json:"printed_name"`
+	Lang          string             `json:"lang"`
+	ReleasedAt    string             `json:"released_at"`
+	URI           string             `json:"uri"`
+	ScryfallURI   string             `json:"scryfall_uri"`
+	Layout        string             `json:"layout"`
+	HighresImage  bool               `json:"highres_image"`
+	ImageStatus   string             `json:"image_status"`
+	ImageUris     ScryfallImageUris  `json:"image_uris"`
+	ManaCost      string             `json:"mana_cost"`
+	Cmc           float64            `json:"cmc"`
+	TypeLine      string             `json:"type_line"`
+	OracleText    string             `json:"oracle_text"`
+	Power         string             `json:"power"`
+	Toughness     string             `json:"toughness"`
+	Colors        []string           `json:"colors"`
+	ColorIdentity []string           `json:"color_identity"`
+	Keywords      []string           `json:"keywords"`
+	CardFaces     []ScryfallCardFace `json:"card_faces"`
 	Legalities    struct {
 		Standard        string `json:"standard"`
 		Future          string `json:"future"`
@@ -112,6 +106,22 @@ type ScryfallApiData struct {
 		Cardhoarder string `json:"cardhoarder"`
 	} `json:"purchase_uris"`
 }
+
+type ScryfallCardFace struct {
+	Object    string            `json:"object"`
+	Name      string            `json:"name"`
+	ImageUris ScryfallImageUris `json:"image_uris"`
+}
+
+type ScryfallImageUris struct {
+	Small      string `json:"small"`
+	Normal     string `json:"normal"`
+	Large      string `json:"large"`
+	Png        string `json:"png"`
+	ArtCrop    string `json:"art_crop"`
+	BorderCrop string `json:"border_crop"`
+}
+
 type ScryfallData struct {
 	Quantity int8 `json:"quantity"`
 	ScryfallApiData
