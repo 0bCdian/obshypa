@@ -1,12 +1,32 @@
 # LOS COMANDOS COMANDEROS
 
-## PA COMPILAR
+## PA COMPILAR TÓ
 
-`go build -o ./bin/api_data_ingestor ./cmd/api_data_ingestor`
+`make -j`
 
-## PA EJECUTAR
+## PA COMPILAR UNO U OTRO
+
+`make ingestor`
+
+`make server`
+
+## PA EJECUTAR INGESTOR
 
 `./bin/api_data_ingestor 'album_season_of_weaving.csv'`
+
+O
+
+`make run-ingestor`
+
+> [!IMPORTANT]
+> make run-ingestor asume que album_season_of_weaving.csv existe
+
+## PA EJECUTAR SERVER
+
+`make run-server`
+
+> [!NOTE]
+> para usar si te da pereza correr dos comandos, not suitable for production
 
 ## PA DESAROLLAR
 
