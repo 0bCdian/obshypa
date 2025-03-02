@@ -9,29 +9,32 @@
 <body>
 	<section id="Cabecera" class="Mikan">
 		<div>
-			<h1>Galería de Obshypa</h1>
+			<section id="Titulo">
+				<img src="logo obshypa w 256.png" width="64px"/>
+				<h1>Galería de Obshypa</h1>
+			</section>
 			<nav>
-				<a>En venta</a>
-				<a>En busca</a>
-				<a>Metodología</a>
-				<a>Quiénes somos</a>
+				<a href="en_venta.html" class="EstasAqui">En venta</a>
+				<a href="quienes_somos.html">Quiénes somos</a>
 			</nav>
 		</div>
-
-		<h2>En venta</h2>
 	</section>
+
+	<h2>En venta</h2>
 
 	<section id="Cuerpo">
 
-		<button type="button" id="GoBackButton" onclick="moveBack()">◀</button>
+		<button type="button" id="GoBackButton" onclick="moveBack()">🞀</button>
 		<section id="Gallery"></section>
-		<button type="button" id="GoForwardButton" onclick="moveForward()">▶</button>
+		<button type="button" id="GoForwardButton" onclick="moveForward()">🞂</button>
 
 	</section>
 
+	<!-- TO-DO: Definir un pie mejor... si es que queremos uno
 	<footer class="Mikan">
 		It's us: OBSHYPA
 	</footer>
+	-->
 </body>
 
 <script>
@@ -98,7 +101,7 @@
 			cardQuantity.className = "QuantityInfo";
 
 			const cardPriceRange = createParagraph();
-			cardPriceRange.textContent = `${card.prices.low} € — ${card.prices.avg} €`;
+			cardPriceRange.textContent = `${localizeNumber(card.prices.low)} € — ${localizeNumber(card.prices.avg)} €`;
 			cardPriceRange.className = "PriceInfo";
       
 			section.append(cardImageZone, document.createElement("br"), cardName, cardQuantity, cardPriceRange);
@@ -111,6 +114,10 @@
 		if (cards.length < cardsPerPage) {
 			disableGoForwardButton(); //TO-DO: We need to be able to detect the last page of cards better. This won't work on certain situations.
 		}
+	}
+
+	function localizeNumber(rawNumber) {
+		return rawNumber.toLocaleString("es-ES", { minimumFractionDigits: 2 }); // Leave language as undefined to use the user's browser locale.
 	}
 
 	function disableGoBackButton() {
