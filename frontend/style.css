@@ -9,19 +9,30 @@
   --mandarin: #f7cb62;
   --peel: #ffe6aa;
   --metal: #5f5f5f;
+  --shadow: #00000035;
   --radius-style: 20px;
-  --general-padding: 40px;
-  --cardWidth: 306px;
-  --cardHeight: 424px;
-  --cardImagePadding: 18px;
+  --general-padding: 30px;
+  --card-width: 306px;
+  --card-height: 424px;
+  --card-image-padding: 18px;
 }
 
 #Cabecera div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: var(--general-padding);
+  padding: var(--general-padding) calc(var(--general-padding)*5);
   align-items: center;
+}
+
+#Titulo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#Titulo * {
+  padding: 5px;
 }
 
 #Cuerpo {
@@ -41,8 +52,8 @@
 }
 
 #Gallery img {
-  width: var(--cardWidth);
-  height: var(--cardHeight);
+  width: var(--card-width);
+  height: var(--card-height);
 }
 
 .Mikan {
@@ -55,7 +66,7 @@
   color: var(--metal);
   font-weight: bold;
   border-radius: var(--radius-style);
-  max-width: calc(var(--cardWidth) + var(--cardImagePadding)*2);
+  max-width: calc(var(--card-width) + var(--card-image-padding)*2);
   display: grid;
   place-content: center;
   text-align: center;
@@ -66,7 +77,7 @@
 
 .ImageSleeve {
   background-color: var(--mandarin);
-  padding: var(--cardImagePadding);
+  padding: var(--card-image-padding);
   border-radius: var(--radius-style);
   grid-column: 1 / span 3;
 }
@@ -113,9 +124,18 @@ nav {
 }
 
 a {
+  margin: 8px;
   padding: 10px;
   font-weight: bolder;
   font-size: large;
+  color: white;
+  border-radius: 15px;
+  border: 3px solid var(--peel);
+  text-decoration: none;
+}
+
+.EstasAqui {
+  background-color: var(--peel);
 }
 
 h2 {
@@ -123,17 +143,18 @@ h2 {
   color: var(--metal);
   padding: 15px;
   padding-left: var(--general-padding);
-  box-shadow: 0px 5px 3px #00000035;
+  box-shadow: 0px 5px 3px var(--shadow);
+  width: initial;
+  text-align: center;
 }
 
 button {
   /* TO-DO: Make the buttons more accesible on smaller screen sizes */
-  background-color: var(--metal);
-  color: white;
-  font-size: xx-large;
+  color: var(--mandarin);
+  text-shadow: var(--shadow) 0 5px 5px;
+  background-color: white;
+  font-size: 110px;
   border: none;
-  border-radius: 8px;
-  padding: 15px;
   text-align: center;
   cursor: pointer;
 }
@@ -147,6 +168,6 @@ footer {
   /* TO-DO: Make a footer that stays on the bottom part of the web and works correctly when there is scroll... */
   padding: var(--general-padding);
   font-size: xx-large;
-  box-shadow: 0px -5px 3px #00000035;
+  box-shadow: 0px -5px 3px var(--shadow);
   text-shadow: #00000075 0 0 8px;
 }
