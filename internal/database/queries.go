@@ -6,6 +6,7 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"github.com/shypa/cards-website/internal/apiclient"
+	"github.com/shypa/cards-website/internal/csvreader"
 )
 
 type CardQueryParams struct {
@@ -41,4 +42,52 @@ func GetCards(ctx context.Context, client *firestore.Client, params CardQueryPar
 		cards = append(cards, &card)
 	}
 	return cards, nil
+}
+
+func UpsertCards(ctx context.Context, client *firestore.Client, cards *[]apiclient.Card) error {
+	writer := client.BulkWriter(ctx)
+	collection := client.Collection("Cards")
+
+	for _, card := range *cards {
+		docRef := collection.Doc(card.ID)
+		_, err := writer.Set(docRef, card)
+		if err != nil {
+			return fmt.Errorf("failed to queue card write: %w", err)
+		}
+	}
+
+	writer.End()
+
+	return nil
+}
+
+func UpsertCardStock(ctx context.Context, client *firestore.Client, manaboxInfo csvreader.CsvData) error {
+	collection := client.Collection("Stock")
+	for _, card := range manaboxInfo {
+		_, err := collection.Doc(card.ScryfallID).Set(ctx, card)
+		if err != nil {
+			fmt.Printf("Could not save card %s on database", card.ScryfallID)
+			continue
+		}
+	}
+	return nil
+}
+
+func GetCardStock(ctx context.Context, client *firestore.Client) (csvreader.CsvData, error) {
+	collection := client.Collection("Stock")
+	docs, err := collection.Documents(ctx).GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get card stock: %w", err)
+	}
+
+	stockData := make(csvreader.CsvData, 0, len(docs))
+	for _, doc := range docs {
+		var card csvreader.LocalData
+		if err := doc.DataTo(&card); err != nil {
+			return nil, fmt.Errorf("failed to convert document to card stock: %w", err)
+		}
+		stockData = append(stockData, card)
+	}
+
+	return stockData, nil
 }
