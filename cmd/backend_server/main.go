@@ -173,7 +173,7 @@ func newServer(client *firestore.Client, port string) *http.Server {
 	router := http.NewServeMux()
 
 	mw := createStack(
-		enableCors("*"), // Allow all origins for now
+		enableCors("http://localhost:3000"), // Allow only localhost 3000 or origin
 		withFirestore(client),
 		withLogging(),
 	)
