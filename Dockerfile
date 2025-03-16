@@ -12,5 +12,6 @@ WORKDIR /server
 
 COPY --from=base ./app/api_server .
 COPY --from=base ./app/api_data.json .
+COPY --from=base ./app/frontend ./static/
 
 CMD ["./api_server"]
