@@ -65,7 +65,7 @@ jobs:
       - name: Deploy to ${{ env.ENV }}
         if: ${{ success() }}
         run: |
-          ./scripts/deploy-sever.sh
+          ./scripts/deploy-server.sh
       - name: Comment on PR with deployment URL
         if: ${{ github.event_name == 'pull_request' && success() }}
         uses: actions/github-script@v7
