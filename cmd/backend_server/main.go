@@ -197,7 +197,7 @@ var (
 )
 
 func parseFlags() {
-	prodFlag := flag.Bool("prod", false, "run server on prod or dev mode, by default is prod")
+	prodFlag := flag.Bool("prod", true, "run server on prod or dev mode, by default is prod")
 	portFlag := flag.String("port", "8080", "port to listen to, default 8080")
 	flag.Parse()
 
@@ -224,9 +224,9 @@ func run(ctx context.Context, w io.Writer, lookEnv func(string) (string, bool)) 
 	var client *firestore.Client
 	var err error
 	defer cancel()
-	project, exists := lookEnv("PROJECT")
+	project, exists := lookEnv("GCLOUD_PROJECT")
 	if !exists {
-		return fmt.Errorf("PROJECT environment variable not found")
+		return fmt.Errorf("GCLOUD_PROJECT environment variable not found")
 	}
 	if isProd {
 		client, err = database.NewCloudFirestoreClient(ctx, project)

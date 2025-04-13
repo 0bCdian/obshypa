@@ -1,0 +1,91 @@
+name: Publish Website
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "internal/**"
+      - "cmd/api_data_ingestor/**"
+      - "frontend/**"
+      - go.sum
+      - go.mod
+  push:
+    branches: ["main"]
+    paths:
+      - "internal/**"
+      - "cmd/api_data_ingestor/**"
+      - "frontend/**"
+      - go.sum
+      - go.mod
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_NAME: ${{vars.REGISTRY_NAME}}
+      GCLOUD_PROJECT: ${{vars.GCLOUD_PROJECT}}
+      GCLOUD_REGION: ${{vars.GCLOUD_REGION}}
+      WEBSITE_SA: ${{ vars.WEBSITE_SA }}
+      WIF_POOL: ${{ vars.WIF_POOL }}
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - uses: "google-github-actions/auth@v2"
+        with:
+          project_id: ${{ env.GCLOUD_PROJECT }}
+          workload_identity_provider: ${{ env.WIF_POOL }}
+      - name: Set environment type
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "ENV=staging" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          fi
+      - name: Build
+        run: |
+          ./scripts/build-server.sh
+      - name: Auth docker
+        if: ${{success()}}
+        run: |
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "$REGISTRY_NAME"
+      - name: Publish
+        if: ${{ success() }}
+        run: |
+          ./scripts/publish-server.sh
+      - name: Delete existing service before deployment
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
+        run: |
+          echo "Deleting staging service before redeployment..."
+          gcloud run services delete "obshypa-staging" --region "$GCLOUD_REGION" --quiet || true
+      - name: Deploy to ${{ env.ENV }}
+        if: ${{ success() }}
+        run: |
+          ./scripts/deploy-sever.sh
+      - name: Comment on PR with deployment URL
+        if: ${{ github.event_name == 'pull_request' && success() }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            try {
+              const url = fs.readFileSync('server-url.txt', 'utf8').trim();
+              const issue_number = context.issue.number;
+              const comment = `🚀 Server deployed to: ${url}`;
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                body: comment
+              });
+              console.log(`Successfully commented on PR
+            } catch (error) {
+              console.error('Error reading server URL or posting comment:', error);
+              core.setFailed('Failed to comment on PR with deployment URL');
+            }

@@ -1,0 +1,16 @@
+FROM golang:1.23.6-alpine3.21 AS base
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -o ./bin/api_data_ingestor ./cmd/api_data_ingestor
+
+
+FROM scratch
+
+WORKDIR /ingestor
+
+COPY --from=base ./app/bin/api_data_ingestor .
+
+CMD ["./api_data_ingestor -prod"]

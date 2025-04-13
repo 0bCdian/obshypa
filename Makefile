@@ -1,8 +1,9 @@
 OUTPUT_DIR=bin
 SERVER_BINARY=$(OUTPUT_DIR)/backend_server
 INGESTOR_BINARY=$(OUTPUT_DIR)/api_data_ingestor
+UPLOADER_BINARY=$(OUTPUT_DIR)/uploader
 
-all: server ingestor
+all: server ingestor uploader
 
 server:
 	echo "Compiling $(SERVER_BINARY)"
@@ -11,6 +12,10 @@ server:
 ingestor:
 	echo "Compiling $(INGESTOR_BINARY)"
 	go build -o $(INGESTOR_BINARY) ./cmd/api_data_ingestor
+
+uploader:
+	echo "Compiling $(UPLOADER_BINARY)"
+	go build -o $(UPLOADER_BINARY) ./cmd/stock_uploader/
 
 clean:
 	rm -rf ./$(OUTPUT_DIR)
