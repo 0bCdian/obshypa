@@ -42,16 +42,20 @@ resource "google_iam_workload_identity_pool_provider" "obshypa" {
     "attribute.base_ref"            = "assertion.base_ref"
     "attribute.event_name"          = "assertion.event_name"
   }
-
   attribute_condition = <<EOT
-    attribute.repository_owner_id == "${var.repo_owner_id}" &&
-    attribute.repository == "${var.repo_owner}/${var.repo_name}" &&
-    (
-      (attribute.event_name == "push" && attribute.ref == "refs/heads/main") ||
-      (attribute.event_name == "pull_request" && attribute.base_ref == "refs/heads/main")
-    )
+  attribute.repository_owner_id == "${var.repo_owner_id}" &&
+  attribute.repository == "${var.repo_owner}/${var.repo_name}"
 EOT
 
+  #   attribute_condition = <<EOT
+  #     attribute.repository_owner_id == "${var.repo_owner_id}" &&
+  #     attribute.repository == "${var.repo_owner}/${var.repo_name}" &&
+  #     (
+  #       (attribute.event_name == "push" && attribute.ref == "refs/heads/main") ||
+  #       (attribute.event_name == "pull_request" && attribute.base_ref == "refs/heads/main")
+  #     )
+  # EOT
+  #
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
