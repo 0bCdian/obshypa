@@ -38,6 +38,7 @@ jobs:
         with:
           project_id: ${{ secrets.GCLOUD_PROJECT }}
           workload_identity_provider: ${{ secrets.WIF_POOL }}
+          service_account: ${{ secrets.WIF_SA }}
       - name: Set environment type
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
