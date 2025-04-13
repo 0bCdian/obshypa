@@ -18,7 +18,8 @@ SERVICE_URL=$(
     --service-account "$WEBSITE_SA" \
     --platform managed \
     --allow-unauthenticated \
-    --format='value(status.url)'
+    --format='value(status.url)' \
+    --region "$GCLOUD_REGION"
 )
 
 echo "$SERVICE_URL" >server-url.txt
