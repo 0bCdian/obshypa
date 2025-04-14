@@ -68,7 +68,6 @@ jobs:
           ./scripts/deploy-server.sh
       - name: Comment on PR with deployment URL
         if: ${{ github.event_name == 'pull_request' && success() }}
-      - name: PR comment with reactions
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
