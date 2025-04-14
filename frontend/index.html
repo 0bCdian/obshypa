@@ -63,7 +63,7 @@
 	}
 
 	async function getCards() {
-		response = await fetch(`http://localhost:8000/cards?limit=${cardsPerPage}&offset=${currentOffset}`);
+		response = await fetch(`/cards?limit=${cardsPerPage}&offset=${currentOffset}`);
 		const cards = await response.json();
 		return cards;
 	}
