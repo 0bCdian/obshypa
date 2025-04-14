@@ -68,24 +68,10 @@ jobs:
           ./scripts/deploy-server.sh
       - name: Comment on PR with deployment URL
         if: ${{ github.event_name == 'pull_request' && success() }}
-        uses: actions/github-script@v7
+      - name: PR comment with reactions
+        uses: thollander/actions-comment-pull-request@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            try {
-              const url = fs.readFileSync('server-url.txt', 'utf8').trim();
-              const issue_number = context.issue.number;
-              const comment = `🚀 Server deployed to: ${url}`;
-              
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue_number,
-                body: comment
-              });
-              console.log(`Successfully commented on PR
-            } catch (error) {
-              console.error('Error reading server URL or posting comment:', error);
-              core.setFailed('Failed to comment on PR with deployment URL');
-            }
+          message: |
+            Url of website on:
+          file-path: "server-url.txt"
+          reactions: eyes, rocket
