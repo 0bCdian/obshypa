@@ -1,10 +1,12 @@
-FROM golang:1.23.6-alpine3.21 AS base
+FROM golang:1.23.6-alpine3.21 AS builder
 
-WORKDIR /build
+WORKDIR /app
 
 COPY . .
 
-RUN go build -o backend_server ./cmd/backend_server/
+RUN go build -o backend_server ./cmd/backend_server/ && mv -rf /app/frontend/ ./static/
+
 
 EXPOSE ${PORT}
+
 CMD ["./backend_server", "-prod"]
