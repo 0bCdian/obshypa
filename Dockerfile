@@ -1,16 +1,17 @@
 FROM golang:1.23.6-alpine3.21 AS base
 
-WORKDIR /app
+WORKDIR /build
 
 COPY . .
 
-RUN go build -o api_server ./cmd/backend_server/
+RUN go build -o backend_server ./cmd/backend_server/
 
-FROM scratch
+FROM scratch AS server
 
 WORKDIR /server
 
-COPY --from=base ./app/api_server .
-COPY --from=base ./app/frontend ./static/
+COPY --from=base /build/backend_server  .
+COPY --from=base /build/frontend ./static/
 
-CMD ["./api_server -prod"]
+EXPOSE ${PORT}
+CMD ["./backend_server", "-prod"]

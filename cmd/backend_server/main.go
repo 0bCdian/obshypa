@@ -225,15 +225,11 @@ func run(ctx context.Context, w io.Writer, lookEnv func(string) (string, bool)) 
 	var err error
 	defer cancel()
 	project, exists := lookEnv("GCLOUD_PROJECT")
-	if !exists {
+	if !exists && !isProd {
 		return fmt.Errorf("GCLOUD_PROJECT environment variable not found")
 	}
 	if isProd {
 		client, err = database.NewCloudFirestoreClient(ctx, project)
-		if err != nil {
-			return err
-		}
-		err = initializeDbData(ctx, client)
 		if err != nil {
 			return err
 		}
