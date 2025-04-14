@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -168,6 +171,27 @@ func cardsHandler() http.HandlerFunc {
 	}
 }
 
+func setupTLS() {
+	pool := x509.NewCertPool()
+	certFile := "ca-certificates.crt"
+	fi, err := os.ReadFile(certFile)
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Could not open %s for reading CAs", certFile))
+	} else {
+		ok := pool.AppendCertsFromPEM(fi)
+		if !ok {
+			slog.Warn("Certificates were not parsed correctly")
+		}
+		client := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{RootCAs: pool},
+			},
+		}
+		// Set the default client to the new client
+		*http.DefaultClient = *client
+	}
+}
+
 // Create and configure the HTTP server
 func newServer(client *firestore.Client, port string) *http.Server {
 	router := http.NewServeMux()
@@ -178,12 +202,12 @@ func newServer(client *firestore.Client, port string) *http.Server {
 		withLogging(),
 	)
 	// Initialize http file server
+	setupTLS()
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("GET /", fs)
 	router.HandleFunc("GET /cards", cardsHandler())
 
 	handler := mw(router)
-
 	return &http.Server{
 		Addr:    ":" + port,
 		Handler: handler,
