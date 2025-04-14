@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go build -o backend_server ./cmd/backend_server/ && mv -rf /app/frontend/ ./static/
-
+RUN go build -o backend_server ./cmd/backend_server/ && mv -rf ./frontend/ ./static/
 
 EXPOSE ${PORT}
 
