@@ -26,7 +26,7 @@ func getFirestoreClient(ctx context.Context) (*firestore.Client, error) {
 	}
 	if !isProd {
 		if _, exists := os.LookupEnv("FIRESTORE_EMULATOR_HOST"); !exists {
-			return nil, fmt.Errorf("error: Running in non-prod mode, but FIRESTORE_EMULATOR_HOST is not set.")
+			return nil, fmt.Errorf("error Running in non-prod mode, but FIRESTORE_EMULATOR_HOST is not set")
 		}
 	}
 	client, err := firestore.NewClient(ctx, projectID)
@@ -50,7 +50,7 @@ func ParseFileArg() (string, error) {
 	}
 	manaboxCsvFilePath := os.Args[2]
 	if !fileExists(manaboxCsvFilePath) {
-		return "", fmt.Errorf("file doesnt exists")
+		return "", fmt.Errorf("manabox csv file not found at %s", manaboxCsvFilePath)
 	}
 	return manaboxCsvFilePath, nil
 }
