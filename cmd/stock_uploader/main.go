@@ -20,21 +20,20 @@ func init() {
 }
 
 func getFirestoreClient(ctx context.Context) (*firestore.Client, error) {
-	project, exists := os.LookupEnv("PROJECT")
+	projectID, exists := os.LookupEnv("GCLOUD_PROJECT")
 	if !exists {
-		return nil, fmt.Errorf("PROJECT environment variable not found")
+		return nil, fmt.Errorf("GCLOUD_PROJECT env var not found")
 	}
-
-	if isProd {
-		return firestore.NewClient(ctx, project)
+	if !isProd {
+		if _, exists := os.LookupEnv("FIRESTORE_EMULATOR_HOST"); !exists {
+			return nil, fmt.Errorf("error: Running in non-prod mode, but FIRESTORE_EMULATOR_HOST is not set.")
+		}
 	}
-
-	_, exists = os.LookupEnv("FIRESTORE_EMULATOR_HOST")
-	if !exists {
-		return nil, fmt.Errorf("FIRESTORE_EMULATOR_HOST environment variable not found")
+	client, err := firestore.NewClient(ctx, projectID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Firestore client: %w", err)
 	}
-
-	return firestore.NewClient(ctx, project)
+	return client, nil
 }
 
 func fileExists(filename string) bool {
