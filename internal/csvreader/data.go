@@ -1,12 +1,12 @@
 package csvreader
 
 type LocalData struct {
-	ScryfallID      string
-	Quantity        int8
-	SetCode         string
-	CollectorNumber string
-	Language        string
-	Foil            string
+	ScryfallID      string `json:"scryfallID"`
+	Quantity        int8   `json:"quantity"`
+	SetCode         string `json:"setCode"`
+	CollectorNumber string `json:"collectorNumber"`
+	Language        string `json:"language"`
+	Foil            string `json:"foil"`
 }
 
 type CsvData []LocalData

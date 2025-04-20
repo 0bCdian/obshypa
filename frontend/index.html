@@ -14,7 +14,7 @@
 				<h1>Galería de Obshypa</h1>
 			</section>
 			<nav>
-				<a href="en_venta.html" class="EstasAqui">En venta</a>
+				<a href="index.html" class="EstasAqui">En venta</a>
 				<a href="quienes_somos.html">Quiénes somos</a>
 			</nav>
 		</div>
@@ -63,7 +63,7 @@
 	}
 
 	async function getCards() {
-		response = await fetch(`http://localhost:8000/cards?limit=${cardsPerPage}&offset=${currentOffset}`);
+		response = await fetch(`/cards?limit=${cardsPerPage}&offset=${currentOffset}`);
 		const cards = await response.json();
 		return cards;
 	}

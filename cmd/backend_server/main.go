@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,7 +21,61 @@ import (
 	"github.com/shypa/cards-website/internal/database"
 )
 
+// withLogging creates a middleware that logs HTTP requests
+
 type middleware func(http.Handler) http.Handler
+
+func withLogging() middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Start timer
+			start := time.Now()
+
+			// Create a custom response writer to capture status code
+			lrw := newLoggingResponseWriter(w)
+
+			// Process the request
+			next.ServeHTTP(lrw, r)
+
+			// Calculate request duration
+			duration := time.Since(start)
+
+			// Get client IP, considering X-Forwarded-For header
+			clientIP := r.RemoteAddr
+			if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+				clientIP = xff
+			}
+
+			// Log the request details
+			log.Printf(
+				"%s - %s %s - %d %s - %s",
+				clientIP,
+				r.Method,
+				r.URL.Path,
+				lrw.statusCode,
+				http.StatusText(lrw.statusCode),
+				duration,
+			)
+		})
+	}
+}
+
+// loggingResponseWriter is a custom response writer that captures the status code
+type loggingResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+// newLoggingResponseWriter creates a new loggingResponseWriter
+func newLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
+	return &loggingResponseWriter{w, http.StatusOK}
+}
+
+// WriteHeader captures the status code from the response
+func (lrw *loggingResponseWriter) WriteHeader(code int) {
+	lrw.statusCode = code
+	lrw.ResponseWriter.WriteHeader(code)
+}
 
 func initializeDbData(ctx context.Context, client *firestore.Client) error {
 	fmt.Println("loading emulator with data...")
@@ -113,56 +171,112 @@ func cardsHandler() http.HandlerFunc {
 	}
 }
 
+func setupTLS() {
+	pool := x509.NewCertPool()
+	certFile := "ca-certificates.crt"
+	fi, err := os.ReadFile(certFile)
+	if err != nil {
+		slog.Warn(fmt.Sprintf("Could not open %s for reading CAs", certFile))
+	} else {
+		ok := pool.AppendCertsFromPEM(fi)
+		if !ok {
+			slog.Warn("Certificates were not parsed correctly")
+		}
+		client := &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{RootCAs: pool},
+			},
+		}
+		// Set the default client to the new client
+		*http.DefaultClient = *client
+	}
+}
+
 // Create and configure the HTTP server
 func newServer(client *firestore.Client, port string) *http.Server {
 	router := http.NewServeMux()
 
 	mw := createStack(
-		enableCors("*"), // Allow all origins for now
+		enableCors("http://localhost:3000"), // Allow only localhost 3000 or origin
 		withFirestore(client),
+		withLogging(),
 	)
-
+	// Initialize http file server
+	setupTLS()
+	fs := http.FileServer(http.Dir("./static"))
+	router.Handle("GET /", fs)
 	router.HandleFunc("GET /cards", cardsHandler())
 
 	handler := mw(router)
-
 	return &http.Server{
 		Addr:    ":" + port,
 		Handler: handler,
 	}
 }
 
-func run(ctx context.Context, w io.Writer, lookEnv func(string) (string, bool)) error {
-	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-	defer cancel()
+var (
+	isProd  bool
+	project string
+	PORT    string
+)
 
-	project, exists := lookEnv("PROJECT")
-	if !exists {
-		return fmt.Errorf("PROJECT environment variable not found")
-	}
+func parseFlags() {
+	prodFlag := flag.Bool("prod", true, "run server on prod or dev mode, by default is prod")
+	portFlag := flag.String("port", "8080", "port to listen to, default 8080")
+	flag.Parse()
 
-	port, exists := lookEnv("PORT")
-	if !exists {
-		port = "8000"
-	}
+	isProd = *prodFlag
+	PORT = *portFlag
+}
 
-	emulatorHost, exists := lookEnv("FIRESTORE_EMULATOR_HOST")
+func init() {
+	parseFlags()
+}
+
+func parseDevelopmentEnvVars(lookEnv func(string) (string, bool)) error {
+	var exists bool
+
+	_, exists = lookEnv("FIRESTORE_EMULATOR_HOST")
 	if !exists {
 		return fmt.Errorf("this version of the server only works if the FIRESTORE_EMULATOR_HOST env var is present ")
 	}
-	fmt.Println("Firestore emulator running on: ", emulatorHost)
+	return nil
+}
 
-	client, err := database.NewLocalFirestoreClient(ctx, project)
-	if err != nil {
-		return fmt.Errorf("failed to create Firestore client: %w", err)
+func run(ctx context.Context, w io.Writer, lookEnv func(string) (string, bool)) error {
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	var client *firestore.Client
+	var err error
+	defer cancel()
+	project, exists := lookEnv("GCLOUD_PROJECT")
+	if !exists && !isProd {
+		return fmt.Errorf("GCLOUD_PROJECT environment variable not found")
+	}
+	if isProd {
+		client, err = database.NewCloudFirestoreClient(ctx, project)
+		if err != nil {
+			return err
+		}
+	} else {
+		err := parseDevelopmentEnvVars(lookEnv)
+		if err != nil {
+			return err
+		}
+		client, err = database.NewLocalFirestoreClient(ctx, project)
+		if err != nil {
+			return err
+		}
+		err = initializeDbData(ctx, client)
+		if err != nil {
+			return err
+		}
 	}
 	defer client.Close()
-	initializeDbData(ctx, client)
-	server := newServer(client, port)
+	server := newServer(client, PORT)
 
 	serverErrors := make(chan error, 1)
 	go func() {
-		fmt.Fprintf(w, "Server starting on port %s\n", port)
+		fmt.Fprintf(w, "Server starting on port %s\n", PORT)
 		serverErrors <- server.ListenAndServe()
 	}()
 

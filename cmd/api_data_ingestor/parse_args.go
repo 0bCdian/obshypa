@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 )
@@ -9,32 +10,50 @@ type MissingArgError struct {
 	Context string
 }
 
-type EnoentEror struct {
+type NotExistingFileError struct {
 	Context  string
 	Filepath string
 }
 
 func (err *MissingArgError) Error() string {
-	return fmt.Sprintf("not enough args where passed %s", err.Context)
+	return fmt.Sprintf("not enough args were passed %s", err.Context)
 }
 
-func (err *EnoentEror) Error() string {
+func (err *NotExistingFileError) Error() string {
 	return fmt.Sprintf("file %s does not exist\n%s", err.Filepath, err.Context)
 }
 
 type Args struct {
 	manaboxCsv string
+	isProd     bool
 }
 
-func ParseFileArg() (*Args, error) {
-	if len(os.Args) < 2 {
-		return nil, &MissingArgError{Context: "ParseFileArg"}
+func ParseArgs() (*Args, error) {
+	isProd := flag.Bool("prod", false, "Use production mode (Firestore)")
+
+	flag.Parse()
+
+	if *isProd {
+		return &Args{
+			manaboxCsv: "",
+			isProd:     true,
+		}, nil
 	}
-	manaboxCsvFilePath := os.Args[1]
+
+	remainingArgs := flag.Args()
+	if len(remainingArgs) < 1 {
+		return nil, &MissingArgError{Context: "ParseArgs"}
+	}
+
+	manaboxCsvFilePath := remainingArgs[0]
 	if !fileExists(manaboxCsvFilePath) {
-		return nil, &EnoentEror{Filepath: manaboxCsvFilePath, Context: "ParseFileArg"}
+		return nil, &NotExistingFileError{Filepath: manaboxCsvFilePath, Context: "ParseArgs"}
 	}
-	return &Args{manaboxCsv: manaboxCsvFilePath}, nil
+
+	return &Args{
+		manaboxCsv: manaboxCsvFilePath,
+		isProd:     false,
+	}, nil
 }
 
 func fileExists(filename string) bool {

@@ -24,7 +24,7 @@ services:
     depends_on:
       - emulator
     environment:
-      PROJECT: "test"
+      GCLOUD_PROJECT: "test"
       PORT: "8000"
       FIRESTORE_EMULATOR_HOST: "emulator:8080"
-    ports: ["8000:8000"]
+    ports: ["8000:8080"]

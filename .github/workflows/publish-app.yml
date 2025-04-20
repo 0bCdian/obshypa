@@ -1,0 +1,75 @@
+name: Publish Website
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "internal/**"
+      - "cmd/api_data_ingestor/**"
+      - "frontend/**"
+      - go.sum
+      - go.mod
+  push:
+    branches: ["main"]
+    paths:
+      - "internal/**"
+      - "cmd/api_data_ingestor/**"
+      - "frontend/**"
+      - go.sum
+      - go.mod
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_NAME: ${{secrets.REGISTRY_NAME}}
+      GCLOUD_PROJECT: ${{secrets.GCLOUD_PROJECT}}
+      GCLOUD_REGION: ${{secrets.GCLOUD_REGION}}
+      WEBSITE_SA: ${{ secrets.WEBSITE_SA }}
+    permissions:
+      contents: "read"
+      id-token: "write"
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - uses: "google-github-actions/auth@v2"
+        with:
+          project_id: ${{ secrets.GCLOUD_PROJECT }}
+          workload_identity_provider: ${{ secrets.WIF_POOL }}
+          service_account: ${{ secrets.WIF_SA }}
+      - name: Set environment type
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "ENV=staging" >> $GITHUB_ENV
+          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ENV=prod" >> $GITHUB_ENV
+          fi
+      - name: Build
+        run: |
+          ./scripts/build-server.sh
+      - name: Auth docker
+        if: ${{success()}}
+        run: |
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "$REGISTRY_NAME"
+      - name: Publish
+        if: ${{ success() }}
+        run: |
+          ./scripts/publish-server.sh
+      - name: Delete existing service before deployment
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && success() }}
+        run: |
+          echo "Deleting staging service before redeployment..."
+          gcloud run services delete "obshypa-staging" --region "$GCLOUD_REGION" --quiet || true
+      - name: Deploy to ${{ env.ENV }}
+        if: ${{ success() }}
+        run: |
+          ./scripts/deploy-server.sh
+      - name: Comment on PR with deployment URL
+        if: ${{ github.event_name == 'pull_request' && success() }}
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          file-path: "server-url.txt"
+          reactions: eyes, rocket
