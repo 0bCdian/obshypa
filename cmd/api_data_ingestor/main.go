@@ -79,7 +79,7 @@ func main() {
 }
 
 func handleParseError(err error) {
-	var enoent *EnoentError
+	var enoent *NotExistingFileError
 	var missingArg *MissingArgError
 
 	if errors.As(err, &enoent) {

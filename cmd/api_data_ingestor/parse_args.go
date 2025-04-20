@@ -10,7 +10,7 @@ type MissingArgError struct {
 	Context string
 }
 
-type EnoentError struct {
+type NotExistingFileError struct {
 	Context  string
 	Filepath string
 }
@@ -19,7 +19,7 @@ func (err *MissingArgError) Error() string {
 	return fmt.Sprintf("not enough args were passed %s", err.Context)
 }
 
-func (err *EnoentError) Error() string {
+func (err *NotExistingFileError) Error() string {
 	return fmt.Sprintf("file %s does not exist\n%s", err.Filepath, err.Context)
 }
 
@@ -47,7 +47,7 @@ func ParseArgs() (*Args, error) {
 
 	manaboxCsvFilePath := remainingArgs[0]
 	if !fileExists(manaboxCsvFilePath) {
-		return nil, &EnoentError{Filepath: manaboxCsvFilePath, Context: "ParseArgs"}
+		return nil, &NotExistingFileError{Filepath: manaboxCsvFilePath, Context: "ParseArgs"}
 	}
 
 	return &Args{
