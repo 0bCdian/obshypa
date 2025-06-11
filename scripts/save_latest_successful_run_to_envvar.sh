@@ -4,7 +4,7 @@ set -euo pipefail
 
 # old url
 #WORKFLOW_URL="/repos/0bCdian/obshypa/actions/workflows/Build%20cmd%20project.yml/runs"
-WORKFLOW_URL="/repos/0bCdian/obshypa/actions/workflows/build-cmd-project.yml/runs"
+WORKFLOW_URL="/repos/0bCdian/obshypa/actions/workflows/build-api-ingestor.yml/runs"
 
 # get all the runs with github cli
 echo "Getting all the worflow runs"
